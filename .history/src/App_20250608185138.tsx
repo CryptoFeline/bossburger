@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import styles from './styles/App.module.css';
 import { AppState, OverlayLayer, EditorImage } from './types';
 import CanvasEditor from './components/CanvasEditor';
 import Controls from './components/Controls';

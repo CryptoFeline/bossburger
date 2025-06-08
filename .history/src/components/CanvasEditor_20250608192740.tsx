@@ -106,7 +106,7 @@ const CanvasEditor: React.FC<CanvasEditorProps> = ({
     if (appState === 'FINAL' && editorImage) {
       Watermark.draw(ctx, canvasSize, canvasSize);
     }
-  }, [editorImage, overlayLayer, appState, flipped, showHandles, canvasSize]);
+  }, [editorImage, overlayLayer, appState, flipped, showHandles]);
 
   // Prevent right-click save unless FINAL
   useEffect(() => {
@@ -420,6 +420,53 @@ const getHandlePositions = useCallback((): HandlePositions => {
     );
   };
 
+  useEffect(() => {
+    const updateSize = () => {
+      if (containerRef.current) {
+        const size = Math.min(containerRef.current.offsetWidth, CANVAS_SIZE);
+        setCanvasSize(size);
+      }
+    };
+    updateSize();
+    window.addEventListener('resize', updateSize);
+    return () => window.removeEventListener('resize', updateSize);
+  }, []);
+
+  useEffect(() => {
+    const updateHandleSize = () => {
+      setHandleSize(window.innerWidth < 600 ? 32 : 20);
+    };
+    updateHandleSize();
+    window.addEventListener('resize', updateHandleSize);
+    return () => window.removeEventListener('resize', updateHandleSize);
+  }, []);
+
+  useEffect(() => {
+    const updatePadding = () => {
+      setContainerPadding(window.innerWidth < 600 ? 8 : 0);
+    };
+    updatePadding();
+    window.addEventListener('resize', updatePadding);
+    return () => window.removeEventListener('resize', updatePadding);
+  }, []);
+
+  useEffect(() => {
+    if (dragging || scaling || rotating) {
+      window.addEventListener('mousemove', handleGlobalMouseMove);
+      window.addEventListener('mouseup', handleGlobalMouseUp);
+      window.addEventListener('touchmove', handleWindowTouchMove, { passive: false });
+      window.addEventListener('touchend', handleWindowTouchEnd);
+      window.addEventListener('touchcancel', handleWindowTouchEnd);
+      return () => {
+        window.removeEventListener('mousemove', handleGlobalMouseMove);
+        window.removeEventListener('mouseup', handleGlobalMouseUp);
+        window.removeEventListener('touchmove', handleWindowTouchMove);
+        window.removeEventListener('touchend', handleWindowTouchEnd);
+        window.removeEventListener('touchcancel', handleWindowTouchEnd);
+      };
+    }
+  }, [dragging, scaling, rotating, handleGlobalMouseMove, handleGlobalMouseUp]);
+
   const handleTouchStart = (e: React.TouchEvent<HTMLCanvasElement>) => {
     if (e.touches.length === 1) {
       const touch = e.touches[0];
@@ -482,53 +529,6 @@ const getHandlePositions = useCallback((): HandlePositions => {
     setRotating(false);
     setStartMouse(null);
   };
-
-  useEffect(() => {
-    const updateSize = () => {
-      if (containerRef.current) {
-        const size = Math.min(containerRef.current.offsetWidth, CANVAS_SIZE);
-        setCanvasSize(size);
-      }
-    };
-    updateSize();
-    window.addEventListener('resize', updateSize);
-    return () => window.removeEventListener('resize', updateSize);
-  }, []);
-
-  useEffect(() => {
-    const updateHandleSize = () => {
-      setHandleSize(window.innerWidth < 600 ? 32 : 20);
-    };
-    updateHandleSize();
-    window.addEventListener('resize', updateHandleSize);
-    return () => window.removeEventListener('resize', updateHandleSize);
-  }, []);
-
-  useEffect(() => {
-    const updatePadding = () => {
-      setContainerPadding(window.innerWidth < 600 ? 8 : 0);
-    };
-    updatePadding();
-    window.addEventListener('resize', updatePadding);
-    return () => window.removeEventListener('resize', updatePadding);
-  }, []);
-
-  useEffect(() => {
-    if (dragging || scaling || rotating) {
-      window.addEventListener('mousemove', handleGlobalMouseMove);
-      window.addEventListener('mouseup', handleGlobalMouseUp);
-      window.addEventListener('touchmove', handleWindowTouchMove, { passive: false });
-      window.addEventListener('touchend', handleWindowTouchEnd);
-      window.addEventListener('touchcancel', handleWindowTouchEnd);
-      return () => {
-        window.removeEventListener('mousemove', handleGlobalMouseMove);
-        window.removeEventListener('mouseup', handleGlobalMouseUp);
-        window.removeEventListener('touchmove', handleWindowTouchMove);
-        window.removeEventListener('touchend', handleWindowTouchEnd);
-        window.removeEventListener('touchcancel', handleWindowTouchEnd);
-      };
-    }
-  }, [dragging, scaling, rotating, handleWindowTouchMove, handleGlobalMouseMove, handleGlobalMouseUp]);
 
   // Inline responsive styles for the container
 const containerStyles: React.CSSProperties = {

@@ -106,7 +106,7 @@ const CanvasEditor: React.FC<CanvasEditorProps> = ({
     if (appState === 'FINAL' && editorImage) {
       Watermark.draw(ctx, canvasSize, canvasSize);
     }
-  }, [editorImage, overlayLayer, appState, flipped, showHandles, canvasSize]);
+  }, [editorImage, overlayLayer, appState, flipped, showHandles]);
 
   // Prevent right-click save unless FINAL
   useEffect(() => {
