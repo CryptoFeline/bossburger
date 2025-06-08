@@ -9,6 +9,7 @@ interface ControlsProps {
   overlayLayer: OverlayLayer | null;
   setOverlayLayer: (layer: OverlayLayer | null) => void;
   finalImageUrl: string | null;
+  setSuccessMessage: (msg: string) => void;
 }
 
 const CANVAS_SIZE = 512;
@@ -20,7 +21,8 @@ const Controls: React.FC<ControlsProps> = ({
   setEditorImage,
   overlayLayer,
   setOverlayLayer,
-  finalImageUrl
+  finalImageUrl,
+  setSuccessMessage,
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -42,6 +44,7 @@ const Controls: React.FC<ControlsProps> = ({
       });
       setAppState('EDIT');
       setOverlayLayer(null);
+      setSuccessMessage('');
       if (fileInputRef.current) fileInputRef.current.value = ''; // <-- Reset input
     };
     img.src = URL.createObjectURL(file);
@@ -77,6 +80,7 @@ const Controls: React.FC<ControlsProps> = ({
         a.href = url;
         a.download = 'bossburger-edited.png';
         a.click();
+        setSuccessMessage('Image saved! You can create a new image below.');
       }, 'image/png');
     }, 100); // Wait for watermark to render
   };
@@ -86,6 +90,7 @@ const Controls: React.FC<ControlsProps> = ({
     setAppState('EMPTY');
     setEditorImage(null);
     setOverlayLayer(null);
+    setSuccessMessage('');
   };
 
   // Button rendering logic
