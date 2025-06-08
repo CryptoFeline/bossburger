@@ -1,5 +1,7 @@
 # BossBurger PFP Editor
 
+![Bossburger Logo](./public/bossburger.svg)
+
 A simple, mobile-friendly React app for overlaying images on uploaded images. Designed to be embedded as a transparent widget (iframe-ready) on any website.
 
 ## Features
